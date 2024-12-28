@@ -1,6 +1,10 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package ru.normno.myfabexplodetransition
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,18 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-
-@Serializable
-data object MainRoute
-
-@Serializable
-data object AddItemRoute
+import androidx.compose.ui.graphics.Color
 
 @Composable
-fun MainScreen(
+fun SharedTransitionScope.MainScreen(
     fabColor: Color,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onFabClick: () -> Unit,
 ) {
     Scaffold(
@@ -34,6 +32,13 @@ fun MainScreen(
             FloatingActionButton(
                 onClick = onFabClick,
                 containerColor = fabColor,
+                modifier = Modifier
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(
+                            key = FAB_EXPLODE_BOUNDS_KEY,
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -43,8 +48,8 @@ fun MainScreen(
         }) { padding ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
+                .padding(padding)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
             Text(
